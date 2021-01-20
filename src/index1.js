@@ -24,22 +24,37 @@ quoteList.addEventListener('click', function(event) {
    const id = quoteCard.dataset.id
 
    if (event.target.matches('button.btn-danger')) {
-      console.log(event.target)
-      console.log(quoteCard)
-      console.log(id)
       quoteCard.remove()
       deleteQuote(id)
    } else if (event.target.matches('button.btn-success')) {
-      console.log('you found the like button', event.target, quoteCard)
-      const likeBtn = event.target
-      let likeSpan = likeBtn.querySelector('.like-span')
-      let currLikes = parseInt(likeSpan.innerHTML)
-      let newLikes = currLikes + 1
-      console.log(newLikes)
-      likeSpan.innerHTML = newLikes
-      incLikeCount(id)
+      // console.log('you found the like button', event.target, quoteCard)
+      // const likeBtn = event.target
+      // let likeSpan = likeBtn.querySelector('.like-span')
+      // let currLikes = parseInt(likeSpan.innerHTML)
+      // let newLikes = currLikes + 1
+      // console.log(newLikes)
+      // likeSpan.innerHTML = newLikes
+      // incLikeCount(id)
+      getIdToLikeQuote(event)
    }
 })
+
+function getIdToLikeQuote(event) {
+   console.log('you have clicked the like button')
+   const quoteId = event.target.dataset.id
+   
+   likeObj = {quoteId: quoteId}
+   
+
+   incLikes(event)
+   createLike(likeObj)
+}
+
+function incLikes(event) {
+   let currentLikes = parseInt(event.target.querySelector('.likes-span').innerText)
+   currentLikes++
+   event.target.querySelector('.likes-span').innerText = currentLikes
+}
 
 
 
@@ -75,14 +90,12 @@ function deleteQuote(quoteId) {
 }
 
 // OBJ 4
-function incLikeCount(id) {
-   fetch(`http://localhost:3000/likes`, {
+function createLike(quoteId) {
+   fetch('http://localhost:3000/likes', {
       method: "POST",
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ quoteId: id }),
+      body: JSON.stringify(quoteId)
    })
-   
-   // add like object to number of likes in database
 }
 
 
@@ -99,7 +112,7 @@ function addQuotesToDom(allQuotes) {
                <p class="mb-0">${quote.quote}</p>
                <footer class="blockquote-footer">${quote.author}</footer>
                <br>
-               <button class='btn-success'>Likes: <span class='like-span'>${quote.likes.length}</span></button>
+               <button class='btn-success' data-id='${quote.id}'>Likes: <span class='like-span'>${quote.likes.length}</span></button>
                <button class='btn-danger'>Delete</button>
             </blockquote>
          </li>`
@@ -116,7 +129,7 @@ function addSingleQuoteToDom(singleQuote) {
                <footer class="blockquote-footer">${singleQuote.author}</footer>
                <br>
                <button class='btn-success'>Likes: <span class='like-span'>${0}</span></button>
-               <button class='btn-danger'>Delete</button>
+               <button class='btn-danger' data-id='${singleQuote.id}'>Delete</button>
             </blockquote>
          </li>`
 }
